@@ -7,3 +7,5 @@
 /OpenIdTest/packages
 /OpenIdTest/.vs
 /.vs
+/OpenIdTest/OpenIdTest/App_Data/client_secret_85943778819-sbqv80a8q9naonmc9pi4lk0dd5b8oelf.apps.googleusercontent.com.json
+/OpenIdTest/OpenIdTest/OpenId.config

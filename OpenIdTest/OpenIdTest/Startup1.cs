@@ -1,15 +1,11 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
-using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OpenIdConnect;
 using Owin;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 
 [assembly: OwinStartup(typeof(OpenIdTest.Startup1))]
 
@@ -19,7 +15,22 @@ namespace OpenIdTest
     {
         public void Configuration(IAppBuilder app)
         {
-            Configuration2(app);
+            Configuration3(app);
+        }
+        private void Configuration3(IAppBuilder app)
+        {
+            //JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "Cookies"
+            });
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "TempState",
+                AuthenticationMode = AuthenticationMode.Passive
+            });
         }
         private void Configuration2(IAppBuilder app)
         {

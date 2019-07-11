@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using OpenIdTest.Bll;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,16 +15,18 @@ namespace OpenIdTest.Controllers
     {
         public ActionResult Login(string returnUrl)
         {
-            var claims = new List<Claim>();
+            //var claims = new List<Claim>();
 
-            claims.Add(new Claim(ClaimTypes.Role, "admin"));
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, "mijnid"));
-            claims.Add(new Claim(ClaimTypes.Name, "Kloase"));
+            //claims.Add(new Claim(ClaimTypes.Role, "admin"));
+            //claims.Add(new Claim(ClaimTypes.NameIdentifier, "mijnid"));
+            //claims.Add(new Claim(ClaimTypes.Name, "Kloase"));
 
-            var newId = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-            Request.GetOwinContext().Authentication.SignIn(newId);
+            //var newId = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+            //Request.GetOwinContext().Authentication.SignIn(newId);
+            var openId = new OpenIdRequest();
 
-            return RedirectToAction("Index", "Home");
+
+            return Redirect(openId.CreateAuthorizeRequest());// RedirectToAction("Index", "Home");
         }
 
         [Authorize]
