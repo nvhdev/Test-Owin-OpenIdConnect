@@ -53,7 +53,8 @@ namespace OpenIdTest.Bll
             string nonce = Guid.NewGuid().ToString("N");
             string state = Guid.NewGuid().ToString("N");
 
-            SetTempState(state, nonce);
+            var tempAuthentication = new TempAuthentication();
+            tempAuthentication.SetTempState(state, nonce);
 
             return string.Format(_authorizeUrlFormat,
                 _authorizeUri,
@@ -64,27 +65,7 @@ namespace OpenIdTest.Bll
                 HttpUtility.UrlEncode(state),
                 HttpUtility.UrlEncode(nonce));
         }
-
-        private void SetTempState(string state, string nonce)
-        {
-            var tempId = new ClaimsIdentity("TempState");
-            tempId.AddClaim(new Claim("state", state));
-            tempId.AddClaim(new Claim("nonce", nonce));
-
-            HttpContext.Current.Request.GetOwinContext().Authentication.SignIn(tempId);
-        }
-
-        public async Task<Tuple<string, string>> GetTempStateAsync()
-        {
-            var data = await HttpContext.Current.GetOwinContext().Authentication.AuthenticateAsync("TempState");
-
-            var state = data.Identity.FindFirst("state").Value;
-            var nonce = data.Identity.FindFirst("nonce").Value;
-
-            return Tuple.Create(state, nonce);
-        }
-
-        public async Task<string> RequestToken(string code)
+        public async Task<TokenResponse> RequestToken(string code)
         {
             var credentials = string.Format("{0}:{1}", _clientId, _clientSecret);
             using (var client = new HttpClient())
@@ -106,52 +87,34 @@ namespace OpenIdTest.Bll
                 //Request Token
                 var request = await client.PostAsync(_tokenUri, requestBody);
                 var response = await request.Content.ReadAsStringAsync();
-                var tokenResponse = new TokenResponse(response);
 
-                await ValidateTokenAsync(tokenResponse, code);
-                return response;
+                return new TokenResponse(response); 
             }
-
         }
-        public async Task<bool> ValidateTokenAsync(TokenResponse response, string code)
+        public async Task ValidateResponseAndSignInAsync(TokenResponse response)
         {
-            var tempState = await GetTempStateAsync();
-            HttpContext.Current.Request.GetOwinContext().Authentication.SignOut("TempState");
+            var tempAuthentication = new TempAuthentication();
+            var tempState = await tempAuthentication.GetTempStateAsync();
+            tempAuthentication.SignOut();
 
-
-            await ValidateResponseAndSignInAsync(response, tempState.Item2);
-
-            if (!string.IsNullOrEmpty(response.IdentityToken))
-            {
-                // ParseJwt(response.IdentityToken);
-            }
-            if (!string.IsNullOrEmpty(response.AccessToken))
-            {
-                // ParseJwt(response.AccessToken);
-            }
-            return true;
-        }
-        private async Task ValidateResponseAndSignInAsync(TokenResponse response, string nonce)
-        {
             if (!string.IsNullOrWhiteSpace(response.IdentityToken))
             {
-                var tokenClaims = await ValidateTokenAsync(response.IdentityToken, nonce);
-                //var claims = new List<Claim>();
-
+                var claims = await ValidateTokenAsync(response.IdentityToken, tempState.Item2);
+                
                 if (!string.IsNullOrWhiteSpace(response.AccessToken))
                 {
                     //claims.AddRange(await GetUserInfoClaimsAsync(response.AccessToken));
 
-                    tokenClaims.Add(new Claim("access_token", response.AccessToken));
-                    tokenClaims.Add(new Claim("expires_at", (DateTime.UtcNow.ToEpochTime() + response.ExpiresIn).ToDateTimeFromEpoch().ToString()));
+                    claims.Add(new Claim("access_token", response.AccessToken));
+                    claims.Add(new Claim("expires_at", (DateTime.UtcNow.ToEpochTime() + response.ExpiresIn).ToDateTimeFromEpoch().ToString()));
                 }
 
                 if (!string.IsNullOrWhiteSpace(response.RefreshToken))
                 {
-                    tokenClaims.Add(new Claim("refresh_token", response.RefreshToken));
+                    claims.Add(new Claim("refresh_token", response.RefreshToken));
                 }
 
-                var id = new ClaimsIdentity(tokenClaims, "Cookies");
+                var id = new ClaimsIdentity(claims, "Cookies");
                 HttpContext.Current.Request.GetOwinContext().Authentication.SignIn(id);
             }
         }
@@ -167,7 +130,6 @@ namespace OpenIdTest.Bll
                 ValidAudiences = new[] { _clientId },
                 IssuerSigningKeys = openIdConfig.SigningKeys
             };
-
 
             SecurityToken jwt;
             var principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out jwt);

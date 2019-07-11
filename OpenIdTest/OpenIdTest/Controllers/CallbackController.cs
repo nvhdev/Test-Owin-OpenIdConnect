@@ -20,7 +20,8 @@ namespace OpenIdTest.Controllers
             var code = Request.QueryString["code"] ?? "none";
             
             var state = Request.QueryString["state"];
-            var tempState = await openIdRequest.GetTempStateAsync();
+            var tempAuthentiction = new TempAuthentication();
+            var tempState = await tempAuthentiction.GetTempStateAsync();
 
             if (state.Equals(tempState.Item1, StringComparison.Ordinal))
             {
@@ -33,7 +34,9 @@ namespace OpenIdTest.Controllers
 
             ViewBag.Error = Request.QueryString["error"] ?? "none";
 
-            await openIdRequest.RequestToken(code);
+            var tokenResponse = await openIdRequest.RequestToken(code);
+            await openIdRequest.ValidateResponseAndSignInAsync(tokenResponse);
+
             return RedirectToAction("Index", "Home");
 		}
     }
