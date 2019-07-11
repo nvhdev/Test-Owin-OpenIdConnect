@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdTest", "OpenIdTest\OpenIdTest.csproj", "{425EF76C-FB8A-4D01-86E1-0E5381424DED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{425EF76C-FB8A-4D01-86E1-0E5381424DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425EF76C-FB8A-4D01-86E1-0E5381424DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425EF76C-FB8A-4D01-86E1-0E5381424DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425EF76C-FB8A-4D01-86E1-0E5381424DED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BABF485D-B942-40D2-9A06-E3B0FB4A08AD}
+	EndGlobalSection
+EndGlobal

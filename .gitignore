@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/OpenIdTest/OpenIdTest/obj/Debug
+/OpenIdTest/OpenIdTest/bin
+/OpenIdTest/packages
+/OpenIdTest/.vs
+/.vs
