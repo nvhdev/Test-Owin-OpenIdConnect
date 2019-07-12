@@ -12,7 +12,7 @@ namespace OpenIdTest.Controllers
     {
         public ActionResult Index()
         {
-            Request.GetOwinContext().Authentication.SignOut("Cookies");
+            Request.GetOwinContext().Authentication.SignOut();
 
             return View();
         }

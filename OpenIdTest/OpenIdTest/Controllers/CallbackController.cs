@@ -3,6 +3,7 @@ using OpenIdTest.Bll;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,27 +15,19 @@ namespace OpenIdTest.Controllers
 {
     public class CallbackController : Controller
     {
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string code, string state)
 		{
             var openIdRequest = new OpenIdRequest();
-            var code = Request.QueryString["code"] ?? "none";
             
-            var state = Request.QueryString["state"];
             var tempAuthentiction = new TempAuthentication();
             var tempState = await tempAuthentiction.GetTempStateAsync();
 
-            if (state.Equals(tempState.Item1, StringComparison.Ordinal))
+            if (!state.Equals(tempState.Item1, StringComparison.Ordinal))
             {
-                ViewBag.State = state + " (valid)";
-            }
-            else
-            {
-                ViewBag.State = state + " (invalid)";
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "state invalid"); 
             }
 
-            ViewBag.Error = Request.QueryString["error"] ?? "none";
-
-            var tokenResponse = await openIdRequest.RequestToken(code);
+            var tokenResponse = await openIdRequest.RequestTokenAsync(code);
             await openIdRequest.ValidateResponseAndSignInAsync(tokenResponse);
 
             return RedirectToAction("Index", "Home");

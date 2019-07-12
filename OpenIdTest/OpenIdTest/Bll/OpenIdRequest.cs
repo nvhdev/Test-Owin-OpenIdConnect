@@ -1,5 +1,6 @@
 ﻿using IdentityModel;
 using IdentityModel.Client;
+using Microsoft.AspNet.Identity;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +31,6 @@ namespace OpenIdTest.Bll
         private string _redirectUri;
         private string _authorizeUri;
         private string _tokenUri;
-        private string _auth0Domain;
         private string _wellKnownUri;
 
         private string _authorizeUrlFormat;
@@ -45,7 +45,6 @@ namespace OpenIdTest.Bll
             _tokenUri = ConfigurationManager.AppSettings["_tokenUri"];
             _responseType = ConfigurationManager.AppSettings["_responseType"];
             _scope = ConfigurationManager.AppSettings["_scope"];
-            _auth0Domain = ConfigurationManager.AppSettings["_auth0Domain"];
             _wellKnownUri = ConfigurationManager.AppSettings["_wellKnownUri"];
         }
         public string CreateAuthorizeRequest()
@@ -65,7 +64,7 @@ namespace OpenIdTest.Bll
                 HttpUtility.UrlEncode(state),
                 HttpUtility.UrlEncode(nonce));
         }
-        public async Task<TokenResponse> RequestToken(string code)
+        public async Task<TokenResponse> RequestTokenAsync(string code)
         {
             var credentials = string.Format("{0}:{1}", _clientId, _clientSecret);
             using (var client = new HttpClient())
@@ -114,7 +113,7 @@ namespace OpenIdTest.Bll
                     claims.Add(new Claim("refresh_token", response.RefreshToken));
                 }
 
-                var id = new ClaimsIdentity(claims, "Cookies");
+                var id = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                 HttpContext.Current.Request.GetOwinContext().Authentication.SignIn(id);
             }
         }
@@ -126,7 +125,7 @@ namespace OpenIdTest.Bll
 
             var validationParameters = new TokenValidationParameters
             {
-                ValidIssuer = _auth0Domain,                
+                ValidIssuer = openIdConfig.Issuer,                
                 ValidAudiences = new[] { _clientId },
                 IssuerSigningKeys = openIdConfig.SigningKeys
             };

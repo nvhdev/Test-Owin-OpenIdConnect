@@ -1,28 +1,35 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Claim Test";
 }
+@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    @{
-        var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-
-        if (claimsIdentity != null)
-        {
-            foreach (var claim in claimsIdentity.Claims)
-            {
-                <p>
-                    @claim.Type.ToString();
-                    @claim.Value.ToString();
-                </p>
-
-                
-            }
-        }
+    if (claimsIdentity != null)
+    {
+        var pic = claimsIdentity.FindFirst("picture");
+        <div class="row">
+            <h1>Claims</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                @if (pic != null)
+                {
+                    <img src="@pic.Value" />
+                }
+            </div>
+            <div class="col-md-10">
+                @foreach (var claim in claimsIdentity.Claims)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            @claim.Type.ToString()
+                        </div>
+                        <div class="col-md-6">
+                            @claim.Value.ToString();
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     }
-</div>
+}
