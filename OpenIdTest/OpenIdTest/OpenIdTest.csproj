@@ -179,7 +179,10 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Bll\OpenIdRequest.cs" />
+    <Compile Include="Bll\OpenId\Authorize.cs" />
+    <Compile Include="Bll\OpenId\OpenIdConfig.cs" />
+    <Compile Include="Bll\OpenId\OpenIdSettings.cs" />
+    <Compile Include="Bll\OpenId\Token.cs" />
     <Compile Include="Bll\TempAuthentication.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />

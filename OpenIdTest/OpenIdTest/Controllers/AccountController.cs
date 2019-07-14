@@ -2,6 +2,7 @@
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using OpenIdTest.Bll;
+using OpenIdTest.Bll.OpenId;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace OpenIdTest.Controllers
     {
         public ActionResult Login()
         {
-            var openId = new OpenIdRequest();
-            return Redirect(openId.CreateAuthorizeRequest());
+            var authorizeOpenId = new Authorize();
+            return Redirect(authorizeOpenId.CreateAuthorizeUrl());
         }
 
         public ActionResult Logout()
